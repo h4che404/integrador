@@ -76,8 +76,5 @@ El programa permite:
 
 ## 👥 Participación de los integrantes ##
 
-## Completar con los datos reales del grupo.
-## Si el trabajo es individual, dejar solo un integrante.
-
 - **[Juan Cruz Elias Martin]** 
 - **[Joaquin Mendez Reynoso]**
