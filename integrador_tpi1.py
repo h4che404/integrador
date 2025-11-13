@@ -47,11 +47,11 @@ def input_str_solo_letras(mensaje):
         entrada = input(mensaje).strip()
         entrada = normalizar_texto(entrada).strip()
         if not entrada:
-            print("❌ Error: La entrada no puede estar vacía. Inténtelo de nuevo.")
+            print("Error: La entrada no puede estar vacía. Inténtelo de nuevo.")
             continue
         if entrada.isalpha():
             return entrada
-        print("❌ Error: Ingrese solo letras (caracteres alfabéticos).")
+        print("Error: Ingrese solo letras (caracteres alfabéticos).")
 
 def input_int(mensaje, permitir_vacio=False, valor_defecto=None):
     """Pide un número entero y valida"""
@@ -66,14 +66,25 @@ def input_int(mensaje, permitir_vacio=False, valor_defecto=None):
 
 def input_opcion(mensaje, opciones, permitir_vacio=False):
     """Pide una opción de texto válida."""
-    opciones_min = [o.lower() for o in opciones]
+    opciones_normalizadas = {
+        normalizar_texto(opcion): opcion 
+        for opcion in opciones
+    }
     while True:
         entrada = input_str_solo_letras(mensaje).strip()
         if entrada == "" and permitir_vacio:
             return None
-        if entrada.lower() in opciones_min:
-            return opciones[opciones_min.index(entrada.lower())]
-        print("Opción inválida. Opciones válidas:", ", ".join(opciones))
+        coincidencia_encontrada = None
+        for normalizado_opcion, original_opcion in opciones_normalizadas.items():
+            if normalizado_opcion.startswith(entrada):
+                coincidencia_encontrada = original_opcion
+                break 
+        if coincidencia_encontrada:
+            return coincidencia_encontrada
+        else:
+            print("Opción inválida o ambigua.")
+            print(f"Opciones válidas (acepta coincidencia parcial): {', '.join(opciones)}")
+        
 
 
 # =========================
