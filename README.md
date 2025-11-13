@@ -56,3 +56,26 @@ El programa permite:
 
    ```bash
    python integrador_tpi1.py
+
+3. **📋 Opciones del Menú**
+
+  Al ejecutar el programa, se presentará el siguiente menú:
+
+  ```bash
+  MENU DE OPCIONES
+  1. Cargar datos de países
+  2. Filtrar datos
+  3. Ordenar datos
+  4. Calcular estadísticas
+  5. Mostrar todos los países
+  6. Guardar datos filtrados/ordenados
+  . Salir
+
+
+**👥 Participación de los integrantes**
+
+## Completar con los datos reales del grupo.
+## Si el trabajo es individual, dejar solo un integrante.
+
+- **[Juan Cruz Elias Martin]** 
+- **[Joaquin Mendez Reynoso]**
