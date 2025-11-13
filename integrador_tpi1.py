@@ -174,7 +174,6 @@ def mostrar_paises(paises, maximo=None):
 # =========================
 # BLOQUE 4: MENÚ PRINCIPAL
 # =========================
-mostrar_menu()
 
 def mostrar_menu():
     print("""
