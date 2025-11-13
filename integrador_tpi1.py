@@ -16,8 +16,17 @@ def normalizar_texto(texto):
     """Devuelve el texto sin espacios extras y en minúsculas."""
     if texto is None:
         return ""
+    mapa_acentos = {
+        'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+        'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U',
+        'ñ': 'n', 'Ñ': 'N', 'ü': 'u', 'Ü': 'U'   
+    }
+    for acentuada, sin_acentuar in mapa_acentos.items():
+        texto = texto.replace(acentuada, sin_acentuar)
+        
     return str(texto).strip().lower()
 
+    
 def parse_int_flexible(valor):
     """
     Convierte el valor en entero.
@@ -32,6 +41,17 @@ def parse_int_flexible(valor):
     if s.lstrip("-").isdigit():
         return int(s)
     return 0
+
+def input_str_solo_letras(mensaje):
+    while True:
+        entrada = input(mensaje).strip()
+        entrada = normalizar_texto(entrada).strip()
+        if not entrada:
+            print("❌ Error: La entrada no puede estar vacía. Inténtelo de nuevo.")
+            continue
+        if entrada.isalpha():
+            return entrada
+        print("❌ Error: Ingrese solo letras (caracteres alfabéticos).")
 
 def input_int(mensaje, permitir_vacio=False, valor_defecto=None):
     """Pide un número entero y valida"""
@@ -48,7 +68,7 @@ def input_opcion(mensaje, opciones, permitir_vacio=False):
     """Pide una opción de texto válida."""
     opciones_min = [o.lower() for o in opciones]
     while True:
-        entrada = input(mensaje).strip()
+        entrada = input_str_solo_letras(mensaje).strip()
         if entrada == "" and permitir_vacio:
             return None
         if entrada.lower() in opciones_min:
@@ -123,11 +143,10 @@ def guardar_csv(ruta, paises):
 # =========================
 
 def buscar_por_nombre(paises, termino):
-    termino = normalizar_texto(termino)
-    return [p for p in paises if termino in normalizar_texto(p["nombre"])]
+    return [p for p in paises if normalizar_texto(termino) in normalizar_texto(p["nombre"])]
 
 def filtrar_por_continente(paises, continente):
-    return [p for p in paises if normalizar_texto(p["continente"]) == normalizar_texto(continente)]
+    return [p for p in paises if normalizar_texto(continente) in normalizar_texto(p["continente"] )]
 
 def filtrar_por_rango(paises, campo, minimo, maximo):
     resultado = []
@@ -161,8 +180,10 @@ def estadisticas(paises):
 
 def mostrar_paises(paises, maximo=None):
     if not paises:
-        print("No hay países para mostrar.")
+        print("------------------------------------------")
+        print("No hay países para mostrar con ese nombre.")
         return
+    print("-"*65)
     print(f"{'Nombre':<20} | {'Población':>12} | {'Superficie':>10} | {'Continente':<12}")
     print("-"*65)
     for i, p in enumerate(paises):
@@ -203,17 +224,27 @@ def main():
             print("Hasta luego.")
             break
         elif op == "1":
-            term = input("Ingrese nombre o parte del nombre: ").strip()
+            term = input_str_solo_letras("\nIngrese nombre o parte del nombre: ").strip()
+            print("\n")
             mostrar_paises(buscar_por_nombre(paises, term))
         elif op == "2":
+            print("\n")
             tipo = input_opcion("Filtrar por (a) continente, (b) población, (c) superficie: ", ["a","b","c"])
             if tipo == "a":
-                cont = input("Ingrese el continente: ").strip()
+                cont = input_str_solo_letras("\nIngrese el continente: ").strip()
+                print("\n")
                 mostrar_paises(filtrar_por_continente(paises, cont))
             elif tipo == "b":
-                minv = input_int("Población mínima (ENTER = sin límite): ", True)
-                maxv = input_int("Población máxima (ENTER = sin límite): ", True)
-                mostrar_paises(filtrar_por_rango(paises, "poblacion", minv, maxv))
+                while True:
+                    minv = input_int("\nPoblación mínima (ENTER = sin límite): ", True)
+                    maxv = input_int("\nPoblación máxima (ENTER = sin límite): ", True)
+                    if minv is not None and maxv is not None and minv > maxv:
+                        print("\nError: la población mínima no puede ser mayor que la máxima.")
+                    elif minv <= 0 or maxv <= 0:
+                        print("\nError: los valores deben ser positivos.")
+                    else:
+                        mostrar_paises(filtrar_por_rango(paises, "poblacion", minv, maxv))
+                        break
             elif tipo == "c":
                 minv = input_int("Superficie mínima (ENTER = sin límite): ", True)
                 maxv = input_int("Superficie máxima (ENTER = sin límite): ", True)
@@ -233,10 +264,6 @@ def main():
                 print(f"Promedio de superficie: {round(est['prom_sup'],2)} km²")
         elif op == "5":
             mostrar_paises(paises, 50)
-        elif op == "6":
-            ruta = input("Nombre del archivo CSV para guardar: ").strip()
-            if ruta:
-                guardar_csv(ruta, paises)
         else:
             print("Opción inválida.")
 
