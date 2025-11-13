@@ -70,9 +70,11 @@ El programa permite:
   5. Mostrar todos los países
   6. Guardar datos filtrados/ordenados
   . Salir
+
+  
 <p align="center">
 
-**👥 Participación de los integrantes**
+## 👥 Participación de los integrantes ##
 
 ## Completar con los datos reales del grupo.
 ## Si el trabajo es individual, dejar solo un integrante.
