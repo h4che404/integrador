@@ -204,13 +204,12 @@ def mostrar_menu():
 3) Ordenar países
 4) Mostrar estadísticas
 5) Mostrar todos
-6) Guardar CSV
 0) Salir
 ======================
 """)
 
 def main():
-    print("ntegrador TPI - Sistema robusto sin errores")
+    print("Integrador TPI")
     if not archivo_existe(CSV_FILE_DEFAULT):
         print("No se encontró el archivo base, se creará uno de ejemplo.")
         crear_csv_ejemplo(CSV_FILE_DEFAULT)
