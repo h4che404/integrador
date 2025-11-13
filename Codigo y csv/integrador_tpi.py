@@ -12,10 +12,12 @@ CSV_HEADERS = ["nombre", "poblacion", "superficie", "continente"]
 # BLOQUE 1: VALIDACIONES / UTILIDADES
 # =========================
 
+# Normalización de texto y parsing de enteros flexible
 def normalizar_texto(texto):
     """Devuelve el texto sin espacios extras y en minúsculas."""
     if texto is None:
         return ""
+    # Mapa de acentos a caracteres sin acento
     mapa_acentos = {
         'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
         'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U',
@@ -26,7 +28,7 @@ def normalizar_texto(texto):
         
     return str(texto).strip().lower()
 
-    
+# Revisión y parsing de enteros flexibles    
 def parse_int_flexible(valor):
     """
     Convierte el valor en entero.
@@ -35,13 +37,16 @@ def parse_int_flexible(valor):
     if valor is None:
         return 0
     s = str(valor).strip()
+    # Manejo de cadena vacía
     if s == "":
         return 0
+    # Eliminación de separadores comunes y verificación de dígitos
     s = s.replace(" ", "").replace(",", "").replace(".", "")
     if s.lstrip("-").isdigit():
         return int(s)
     return 0
 
+# Entradas validadas de usuario solamente letras y opciones
 def input_str_solo_letras(mensaje):
     while True:
         entrada = input(mensaje).strip()
@@ -53,6 +58,7 @@ def input_str_solo_letras(mensaje):
             return entrada
         print("Error: Ingrese solo letras (caracteres alfabéticos).")
 
+# Entrada validada de usuario para enteros
 def input_int(mensaje, permitir_vacio=False, valor_defecto=None):
     """Pide un número entero y valida"""
     while True:
@@ -64,12 +70,14 @@ def input_int(mensaje, permitir_vacio=False, valor_defecto=None):
             return parse_int_flexible(entrada_limpia)
         print("Error: ingrese un número entero válido.")
 
+# Entrada validada de usuario para opciones de texto
 def input_opcion(mensaje, opciones, permitir_vacio=False):
     """Pide una opción de texto válida."""
     opciones_normalizadas = {
         normalizar_texto(opcion): opcion 
         for opcion in opciones
     }
+    # Bucle para verificar opción válida y coincidencia parcial
     while True:
         entrada = input_str_solo_letras(mensaje).strip()
         if entrada == "" and permitir_vacio:
@@ -91,12 +99,15 @@ def input_opcion(mensaje, opciones, permitir_vacio=False):
 # BLOQUE 2: PERSISTENCIA (CSV)
 # =========================
 
+# Verificación de existencia de archivo
 def archivo_existe(ruta):
     """Devuelve True si el archivo existe y es accesible."""
     return os.path.isfile(ruta)
 
+# Creación de CSV de ejemplo por si no existe
 def crear_csv_ejemplo(ruta):
     """Crea un CSV de ejemplo si no existe."""
+    # Datos de ejemplo 
     muestra = [
         {"nombre": "Argentina", "poblacion": "45376763", "superficie": "2780400", "continente": "América"},
         {"nombre": "Japón", "poblacion": "125800000", "superficie": "377975", "continente": "Asia"},
@@ -104,15 +115,18 @@ def crear_csv_ejemplo(ruta):
         {"nombre": "Alemania", "poblacion": "83149300", "superficie": "357022", "continente": "Europa"},
         {"nombre": "Australia", "poblacion": "25687041", "superficie": "7692024", "continente": "Oceanía"}
     ]
+    # Guardar CSV de ejemplo
     with open(ruta, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=CSV_HEADERS)
         writer.writeheader()
         for fila in muestra:
             writer.writerow(fila)
 
+# Carga y validación de CSV existente
 def cargar_csv(ruta):
     """Carga un CSV y valida que tenga las columnas requeridas."""
     paises = []
+    # Verificar existencia del archivo 
     if not archivo_existe(ruta):
         print(f"Archivo no encontrado: {ruta}")
         return paises
@@ -123,6 +137,7 @@ def cargar_csv(ruta):
             if requerido not in encabezados:
                 print(f"Falta la columna '{requerido}' en el CSV.")
                 return []
+        # Lectura y validación de filas
         for fila in reader:
             nombre = (fila.get("nombre") or "").strip()
             pobl = parse_int_flexible(fila.get("poblacion"))
@@ -137,11 +152,14 @@ def cargar_csv(ruta):
                 })
     return paises
 
+# Guardado de CSV modificado 
 def guardar_csv(ruta, paises):
     """Guarda la lista de países en un CSV nuevo."""
+    # Validar que haya datos para guardar 
     if not paises:
         print("No hay datos para guardar.")
         return
+    # Guardar en CSV
     with open(ruta, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=CSV_HEADERS)
         writer.writeheader()
@@ -153,14 +171,18 @@ def guardar_csv(ruta, paises):
 # BLOQUE 3: FUNCIONALIDAD PRINCIPAL
 # =========================
 
+# Búsqueda, filtrado, ordenamiento y estadísticas de países
+# Búsqueda por nombre (parcial, case insensitive)
 def buscar_por_nombre(paises, termino):
     return [p for p in paises if normalizar_texto(termino) in normalizar_texto(p["nombre"])]
-
+# Filtro por continente para lista de países 
 def filtrar_por_continente(paises, continente):
     return [p for p in paises if normalizar_texto(continente) in normalizar_texto(p["continente"] )]
 
+# Filtro por rango numérico (población o superficie) 
 def filtrar_por_rango(paises, campo, minimo, maximo):
     resultado = []
+    # Asegurar que el campo es válido 
     for p in paises:
         valor = p.get(campo, 0)
         if minimo is not None and valor < minimo:
@@ -170,16 +192,20 @@ def filtrar_por_rango(paises, campo, minimo, maximo):
         resultado.append(p)
     return resultado
 
+# Ordenamiento por campo (nombre, población o superficie) 
 def ordenar_paises(paises, campo, descendente=False):
     if campo == "nombre":
         return sorted(paises, key=lambda x: normalizar_texto(x["nombre"]), reverse=descendente)
     return sorted(paises, key=lambda x: x.get(campo, 0), reverse=descendente)
 
+# Cálculo de estadísticas básicas de población y superficie 
 def estadisticas(paises):
     if not paises:
         return None
+    # Listas auxiliares para cálculos
     pops = [p["poblacion"] for p in paises]
     sups = [p["superficie"] for p in paises]
+    # Validar que haya datos numéricos 
     if not pops or not sups:
         return None
     return {
@@ -189,6 +215,7 @@ def estadisticas(paises):
         "prom_sup": sum(sups) / len(sups)
     }
 
+# Mostrar lista de países en formato tabular 
 def mostrar_paises(paises, maximo=None):
     if not paises:
         print("------------------------------------------")
@@ -207,6 +234,7 @@ def mostrar_paises(paises, maximo=None):
 # BLOQUE 4: MENÚ PRINCIPAL
 # =========================
 
+# Menú principal y flujo de la aplicación 
 def mostrar_menu():
     print("""
 === MENÚ PRINCIPAL ===
@@ -225,7 +253,7 @@ def main():
         print("No se encontró el archivo base, se creará uno de ejemplo.")
         crear_csv_ejemplo(CSV_FILE_DEFAULT)
     paises = cargar_csv(CSV_FILE_DEFAULT)
-    print(f"{len(paises)} países cargados correctamente.\n")
+    print(f"\n{len(paises)} países cargados correctamente.\n")
 
     while True:
         mostrar_menu()
