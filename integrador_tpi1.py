@@ -55,6 +55,7 @@ def input_opcion(mensaje, opciones, permitir_vacio=False):
             return opciones[opciones_min.index(entrada.lower())]
         print("Opción inválida. Opciones válidas:", ", ".join(opciones))
 
+
 # =========================
 # BLOQUE 2: PERSISTENCIA (CSV)
 # =========================
@@ -173,6 +174,7 @@ def mostrar_paises(paises, maximo=None):
 # =========================
 # BLOQUE 4: MENÚ PRINCIPAL
 # =========================
+mostrar_menu()
 
 def mostrar_menu():
     print("""
