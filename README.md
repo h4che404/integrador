@@ -70,7 +70,7 @@ El programa permite:
   5. Mostrar todos los países
   6. Guardar datos filtrados/ordenados
   . Salir
-
+<p align="center">
 
 **👥 Participación de los integrantes**
 
