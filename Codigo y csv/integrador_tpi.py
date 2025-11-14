@@ -30,10 +30,8 @@ def normalizar_texto(texto):
 
 # Revisión y parsing de enteros flexibles    
 def parse_int_flexible(valor):
-    """
-    Convierte el valor en entero.
-    Elimina separadores (., ) y devuelve 0 si no es válido.
-    """
+    #Convierte el valor en entero.
+    #Elimina separadores (., ) y devuelve 0 si no es válido.
     if valor is None:
         return 0
     s = str(valor).strip()
